@@ -6,32 +6,41 @@ class Worker {
         this.id = id;
         this.attendance = Math.random() < 0.5 ? "Present" : "Absent"; 
         this.workType = this.getWorkType();
-        this.salary = this.calculateSalary();
     }
 
     getWorkType() {
-        if (this.attendance === "Present") {
-            return Math.random() < 0.5 ? "Full-Time" : "Part-Time"; 
+        return this.attendance === "Present" ? (Math.random() < 0.5 ? "Full-Time" : "Part-Time") : "Absent"; 
+    }
+
+    wageFullTime() {
+        return 8 * 20; 
+    }
+
+    wagePartTime() {
+        return 4 * 20; 
+    }
+
+    calculateDailyWages() {
+        switch (this.workType) {
+            case "Full-Time":
+                return this.wageFullTime();
+            case "Part-Time":
+                return this.wagePartTime();
+            case "Absent":
+                return 0; 
+            default:
+                return 0; 
         }
-        return "Absent"; 
     }
 
-    calculateSalary() {
-        const hourlyRate = 20;
-        const hoursWorked = (this.attendance === "Present") ? (this.workType === "Full-Time" ? 8 : 4) : 0;
-        return hourlyRate * hoursWorked; 
-    }
-
-    displayAttendance() {
-        console.log(`ID: ${this.id}, Name: ${this.name}, Attendance: ${this.attendance}`);
-    }
-
-    displayWages() {
-        console.log(`Name: ${this.name}, ID: ${this.id}, Salary: $${this.salary}`);
-    }
-
-    displayWorkType() {
-        console.log(`Name: ${this.name}, Work Type: ${this.workType}`);
+    calculateMonthlyWages() {
+        let totalWages = 0;
+        for (let i = 0; i < 20; i++) {
+            this.attendance = Math.random() < 0.5 ? "Present" : "Absent"; 
+            this.workType = this.getWorkType();
+            totalWages += this.calculateDailyWages();
+        }
+        return totalWages;
     }
 }
 
@@ -44,26 +53,35 @@ const workers = [
 function displayMenu() {
     console.log("\n--- Attendance Menu ---");
     console.log("1) View Attendance");
-    console.log("2) View Wages");
-    console.log("3) Check Work Type");
-    console.log("4) Exit");
+    console.log("2) View Daily Wages");
+    console.log("3) View Work Type");
+    console.log("4) Calculate Monthly Wages");
+    console.log("5) Exit");
 }
 
 function handleChoice(choice) {
     switch (choice) {
         case '1':
-            console.log("\nAttendance Information:");
-            workers.forEach(worker => worker.displayAttendance());
+            workers.forEach(worker => {
+                console.log(`ID: ${worker.id}, Name: ${worker.name}, Attendance: ${worker.attendance}`);
+            });
             break;
         case '2':
-            console.log("\nWage Information:");
-            workers.forEach(worker => worker.displayWages());
+            workers.forEach(worker => {
+                console.log(`Name: ${worker.name}, Daily Wages: $${worker.calculateDailyWages()}`);
+            });
             break;
         case '3':
-            console.log("\nWork Type Information:");
-            workers.forEach(worker => worker.displayWorkType());
+            workers.forEach(worker => {
+                console.log(`Name: ${worker.name}, Work Type: ${worker.workType}`);
+            });
             break;
         case '4':
+            workers.forEach(worker => {
+                console.log(`Name: ${worker.name}, Monthly Salary: $${worker.calculateMonthlyWages()}`);
+            });
+            break;
+        case '5':
             console.log("Exiting the program!");
             process.exit(0);
         default:
@@ -73,6 +91,6 @@ function handleChoice(choice) {
 
 while (true) {
     displayMenu();
-    const choice = readlineSync.question("Enter your choice (1/2/3/4): ");
+    const choice = readlineSync.question("Enter your choice (1/2/3/4/5): ");
     handleChoice(choice);
 }
