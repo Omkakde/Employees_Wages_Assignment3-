@@ -1,96 +1,90 @@
 const readlineSync = require('readline-sync');
+console.log("Welcome to Employee Wage Computation Program");
 
-class Worker {
-    constructor(name, id) {
+class Employee {
+    static WAGE_PER_HOUR = 20;
+    static FULL_DAY_HOUR = 8;
+    static PART_TIME_HOUR = 4;
+    static WORKING_DAYS_PER_MONTH = 20;
+
+    constructor(name, type = 'full-time') {
         this.name = name;
-        this.id = id;
-        this.attendance = Math.random() < 0.5 ? "Present" : "Absent"; 
-        this.workType = this.getWorkType();
+        this.type = type;
+        this.attendance = Employee.checkAttendance();
+        this.dailyWage = this.calculateDailyWage();
+        this.monthlyWage = this.calculateMonthlyWage();
     }
 
-    getWorkType() {
-        return this.attendance === "Present" ? (Math.random() < 0.5 ? "Full-Time" : "Part-Time") : "Absent"; 
+    static checkAttendance() {
+        const isPresent = Math.floor(Math.random() * 2);
+        return isPresent === 1 ? "Present" : "Absent";
     }
 
-    wageFullTime() {
-        return 8 * 20; 
-    }
-
-    wagePartTime() {
-        return 4 * 20; 
-    }
-
-    calculateDailyWages() {
-        switch (this.workType) {
-            case "Full-Time":
-                return this.wageFullTime();
-            case "Part-Time":
-                return this.wagePartTime();
-            case "Absent":
-                return 0; 
-            default:
-                return 0; 
+    calculateDailyWage() {
+        let hoursWorked = this.type === 'part-time' ? Employee.PART_TIME_HOUR : Employee.FULL_DAY_HOUR;
+        if (this.attendance === "Present") {
+            return Employee.WAGE_PER_HOUR * hoursWorked;
         }
+        return 0;
     }
 
-    calculateMonthlyWages() {
-        let totalWages = 0;
-        for (let i = 0; i < 20; i++) {
-            this.attendance = Math.random() < 0.5 ? "Present" : "Absent"; 
-            this.workType = this.getWorkType();
-            totalWages += this.calculateDailyWages();
+    calculateMonthlyWage() {
+        let totalWage = 0;
+        for (let day = 0; day < Employee.WORKING_DAYS_PER_MONTH; day++) {
+            this.attendance = Employee.checkAttendance(); 
+            totalWage += this.calculateDailyWage();
         }
-        return totalWages;
+        return totalWage;
     }
 }
 
-const workers = [
-    new Worker("Om Kakde", 101),
-    new Worker("Raj Patil", 102),
-    new Worker("Akshay Kumar", 103)
+const employees = [
+    new Employee("Om", "full-time"),
+    new Employee("Raj", "full-time"),
+    new Employee("Akshay", "part-time"),
+    new Employee("Monu", "full-time"),
+    new Employee("Sonu", "part-time")
 ];
 
-function displayMenu() {
-    console.log("\n--- Attendance Menu ---");
-    console.log("1) View Attendance");
-    console.log("2) View Daily Wages");
-    console.log("3) View Work Type");
-    console.log("4) Calculate Monthly Wages");
-    console.log("5) Exit");
-}
-
-function handleChoice(choice) {
-    switch (choice) {
-        case '1':
-            workers.forEach(worker => {
-                console.log(`ID: ${worker.id}, Name: ${worker.name}, Attendance: ${worker.attendance}`);
-            });
-            break;
-        case '2':
-            workers.forEach(worker => {
-                console.log(`Name: ${worker.name}, Daily Wages: $${worker.calculateDailyWages()}`);
-            });
-            break;
-        case '3':
-            workers.forEach(worker => {
-                console.log(`Name: ${worker.name}, Work Type: ${worker.workType}`);
-            });
-            break;
-        case '4':
-            workers.forEach(worker => {
-                console.log(`Name: ${worker.name}, Monthly Salary: $${worker.calculateMonthlyWages()}`);
-            });
-            break;
-        case '5':
-            console.log("Exiting the program!");
-            process.exit(0);
-        default:
-            console.log("Invalid choice. Please select a valid option.");
+function displayEmployeeInfo(option) {
+    let employeeData;
+    if (option === 1) {
+        employeeData = employees.map(employee => ({
+            Name: employee.name,
+            Type: employee.type,
+            Attendance: employee.attendance
+        }));
+        console.table(employeeData);
+    } else if (option === 2) {
+        employeeData = employees.map(employee => ({
+            Name: employee.name,
+            Type: employee.type,
+            DailyWage: employee.dailyWage,
+            MonthlyWage: employee.monthlyWage
+        }));
+        console.table(employeeData);
+    } else {
+        console.log("Invalid option. Please select 1, 2, or 3.");
     }
 }
 
-while (true) {
-    displayMenu();
-    const choice = readlineSync.question("Enter your choice (1/2/3/4/5): ");
-    handleChoice(choice);
+let exit = false;
+while (!exit) {
+    console.log("\nChoose an option:");
+    console.log("1) Display Attendance");
+    console.log("2) Display Wages");
+    console.log("3) Exit");
+
+    const userInput = readlineSync.question("Enter your choice: ");
+
+    if (userInput === '1') {
+        displayEmployeeInfo(1);
+    } else if (userInput === '2') {
+        displayEmployeeInfo(2);
+    } else if (userInput === '3') {
+        exit = true;
+        console.log("Exiting the program. Thank you!");
+    } else {
+        console.log("Invalid option. Please select 1, 2, or 3.");
+    }
 }
