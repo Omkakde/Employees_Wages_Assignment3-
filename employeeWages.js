@@ -1,4 +1,5 @@
 const readlineSync = require('readline-sync');
+
 console.log("Welcome to Employee Wage Computation Program");
 
 class Employee {
@@ -39,11 +40,11 @@ class Employee {
 }
 
 const employees = [
-    new Employee("Om", "full-time"),
-    new Employee("Raj", "full-time"),
-    new Employee("Akshay", "part-time"),
-    new Employee("Monu", "full-time"),
-    new Employee("Sonu", "part-time")
+    new Employee("Avdhut", "full-time"),
+    new Employee("Sham", "full-time"),
+    new Employee("Raju", "part-time"),
+    new Employee("Virat", "full-time"),
+    new Employee("Rahul", "part-time")
 ];
 
 function displayEmployeeInfo(option) {
@@ -85,6 +86,6 @@ while (!exit) {
         exit = true;
         console.log("Exiting the program. Thank you!");
     } else {
-        console.log("Invalid option. Please select 1, 2, or 3.");
-    }
+        console.log("Invalid option. Please select 1, 2, or 3.");
+    }
 }
